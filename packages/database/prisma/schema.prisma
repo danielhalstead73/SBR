@@ -1,0 +1,219 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  password        String
+  firstName       String
+  lastName        String
+  role            String    @default("END_USER")
+  emailVerified   Boolean   @default(false)
+  emailVerifyToken String?
+  organizationId  String?
+  avatar          String?
+  bio             String?
+  location        String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  // Relations
+  organization    Organization? @relation(fields: [organizationId], references: [id])
+  sessions        Session[]
+  createdGames    Game[]       @relation("GameCreator")
+  eventAttendees  EventAttendee[]
+  followers       Follower[]
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Organization {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  address     String?
+  city        String?
+  state       String?
+  zipCode     String?
+  phone       String?
+  email       String?
+  website     String?
+  logo            String?
+  bannerImage     String?
+  socialLinks     String?      // JSON string: {facebook, twitter, instagram, discord}
+  contactInfo     String?      // JSON string: {phone, email, address}
+  latitude        Float?
+  longitude       Float?
+  
+  // Feature flags (controlled by SUPER_ADMIN)
+  allowMultiVenue     Boolean @default(false)
+  enableFollowers     Boolean @default(true)
+  enablePublicEvents  Boolean @default(true)
+  enableMessaging     Boolean @default(true)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  users       User[]
+  games       Game[]
+  venues      Venue[]
+  events      Event[]
+  followers   Follower[]
+  messages    Message[]
+
+  @@map("organizations")
+}
+
+model Venue {
+  id              String   @id @default(cuid())
+  name            String
+  address         String
+  city            String?
+  state           String?
+  zipCode         String?
+  latitude        Float?
+  longitude        Float?
+  organizationId  String
+  organization    Organization @relation(fields: [organizationId], references: [id])
+  events          Event[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  @@map("venues")
+}
+
+model Event {
+  id              String      @id @default(cuid())
+  title           String
+  description     String?
+  type            String      // PUBLIC, PRIVATE, COMPETITION
+  startTime       DateTime
+  endTime         DateTime?
+  maxCapacity     Int         @default(8)
+  isRecurring     Boolean     @default(false)
+  recurrenceRule  String?     // JSON string for recurrence
+  status          String      @default("ACTIVE") // ACTIVE, CANCELLED
+  
+  organizationId  String
+  organization    Organization @relation(fields: [organizationId], references: [id])
+  venueId         String?
+  venue           Venue?      @relation(fields: [venueId], references: [id])
+  
+  gameIds         String      // JSON string array of game IDs
+  attendees       EventAttendee[]
+  
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  @@map("events")
+}
+
+model EventAttendee {
+  id        String   @id @default(cuid())
+  eventId   String
+  userId    String
+  status    String   @default("ATTENDING") // ATTENDING, WAITLIST, DECLINED
+  
+  event     Event    @relation(fields: [eventId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  
+  createdAt DateTime @default(now())
+  @@unique([eventId, userId])
+  @@map("event_attendees")
+}
+
+model Follower {
+  id              String       @id @default(cuid())
+  userId          String
+  organizationId  String
+  
+  user            User         @relation(fields: [userId], references: [id])
+  organization    Organization @relation(fields: [organizationId], references: [id])
+  
+  createdAt       DateTime     @default(now())
+  @@unique([userId, organizationId])
+  @@map("followers")
+}
+
+model Message {
+  id              String       @id @default(cuid())
+  subject         String
+  content         String
+  organizationId  String
+  sentToFollowers Boolean      @default(true)
+  sentAt          DateTime     @default(now())
+  
+  organization    Organization @relation(fields: [organizationId], references: [id])
+  @@map("messages")
+}
+
+model Game {
+  id              String     @id @default(cuid())
+  title           String
+  description     String?
+  bggId           Int?       // BoardGameGeek ID
+  bggData         String?    // JSON string of BGG data
+  minPlayers      Int?
+  maxPlayers      Int?
+  playTime        Int?       // in minutes
+  minAge          Int?
+  complexity      Float?     // 1-5 scale
+  status          String     @default("DRAFT")
+  organizationId  String?
+  createdById     String
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
+  // Relations
+  organization    Organization? @relation(fields: [organizationId], references: [id])
+  createdBy       User          @relation("GameCreator", fields: [createdById], references: [id])
+
+  @@map("games")
+}
+
+model BoardGame {
+  id              String   @id @default(cuid())
+  bggId           Int      @unique
+  name            String
+  description     String?
+  image           String?
+  thumbnail       String?
+  minPlayers      Int?
+  maxPlayers      Int?
+  playingTime     Int?
+  minAge          Int?
+  categories      String   // JSON string array of category names
+  mechanics       String   // JSON string array of mechanic names
+  designers       String   // JSON string array of designer names
+  publishers      String   // JSON string array of publisher names
+  yearPublished   Int?
+  complexity      Float?   // 1-5 scale
+  rating          Float?   // BGG average rating
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  @@map("board_games")
+}
+

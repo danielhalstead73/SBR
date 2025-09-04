@@ -1,0 +1,22 @@
+{
+  "name": "@sbr/auth",
+  "version": "0.1.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@sbr/database": "workspace:*",
+    "@sbr/shared": "workspace:*",
+    "@sbr/config": "workspace:*",
+    "@sbr/email": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "name": "sbr-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Next.js monorepo with web and admin applications",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "pnpm dev:prepare && turbo run dev --parallel",
+    "dev:prepare": "pnpm db:generate && pnpm db:push",
+    "lint": "turbo run lint",
+    "clean": "turbo run clean",
+    "db:generate": "npx prisma generate --schema packages/database/prisma/schema.prisma",
+    "db:push": "npx prisma db push --schema packages/database/prisma/schema.prisma",
+    "db:migrate": "npx prisma migrate dev --schema packages/database/prisma/schema.prisma",
+    "db:studio": "npx prisma studio --schema packages/database/prisma/schema.prisma",
+    "prisma:clean": "rimraf \"node_modules/.pnpm/@prisma+client@*/node_modules/.prisma/client\""
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "turbo": "^1.11.0",
+    "typescript": "^5.3.0",
+    "rimraf": "^5.0.0"
+  },
+  "packageManager": "pnpm@8.15.0",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

@@ -1,0 +1,155 @@
+Create a complete Next.js monorepo in C:\SBR with the following exact structure and code. I have all the code already designed - just implement it exactly as specified:
+
+## FOLDER STRUCTURE TO CREATE:
+```
+C:\SBR\
+├── package.json
+├── pnpm-workspace.yaml  
+├── turbo.json
+├── tsconfig.json
+├── .env.example
+├── .gitignore
+├── README.md
+├── postcss.config.js
+├── apps/
+│   ├── web/
+│   │   ├── package.json
+│   │   ├── next.config.js
+│   │   ├── tailwind.config.js
+│   │   ├── postcss.config.js
+│   │   ├── tsconfig.json
+│   │   ├── .env.local
+│   │   └── src/app/
+│   │       ├── globals.css
+│   │       ├── layout.tsx
+│   │       ├── page.tsx
+│   │       ├── login/page.tsx
+│   │       ├── signup/page.tsx
+│   │       ├── dashboard/page.tsx
+│   │       ├── verify-email/page.tsx
+│   │       └── api/auth/
+│   │           ├── login/route.ts
+│   │           ├── signup/route.ts
+│   │           └── logout/route.ts
+│   └── admin/
+│       ├── package.json
+│       ├── next.config.js
+│       ├── tailwind.config.js
+│       ├── postcss.config.js
+│       ├── tsconfig.json
+│       ├── .env.local
+│       └── src/app/
+│           ├── globals.css
+│           ├── layout.tsx
+│           ├── page.tsx
+│           ├── login/page.tsx
+│           ├── dashboard/page.tsx
+│           ├── unauthorized/page.tsx
+│           └── api/auth/
+│               ├── login/route.ts
+│               └── logout/route.ts
+└── packages/
+    ├── database/
+    │   ├── package.json
+    │   ├── tsconfig.json
+    │   ├── prisma/
+    │   │   ├── schema.prisma
+    │   │   └── migrations/20250101000000_init/migration.sql
+    │   └── src/
+    │       ├── index.ts
+    │       └── client.ts
+    ├── auth/
+    │   ├── package.json
+    │   ├── tsconfig.json
+    │   └── src/
+    │       ├── index.ts
+    │       └── simple-auth.ts
+    ├── shared/
+    │   ├── package.json
+    │   ├── tsconfig.json
+    │   └── src/index.ts
+    ├── config/
+    │   ├── package.json
+    │   ├── tsconfig.json
+    │   └── src/index.ts
+    ├── email/
+    │   ├── package.json
+    │   ├── tsconfig.json
+    │   └── src/index.ts
+    └── ui/
+        ├── package.json
+        ├── tsconfig.json
+        └── src/
+            ├── index.ts
+            ├── components.tsx
+            └── utils.ts
+```
+
+## REQUIREMENTS:
+- Next.js 15.5.2 with App Router
+- TypeScript throughout  
+- pnpm workspaces + Turborepo
+- Prisma + SQLite database
+- Tailwind CSS
+- Session-based authentication
+- Role-based access control
+- Complete CRUD operations
+- Email verification system
+- Responsive UI components
+
+## KEY IMPLEMENTATIONS NEEDED:
+
+**Database (Prisma Schema):**
+- User model with authentication fields
+- Session model for auth  
+- Organization model for venues
+- Game model with BGG integration
+- Proper relationships and indexes
+
+**Authentication System:**
+- Session-based auth with cookies
+- Email verification flow
+- Role-based access (SUPER_ADMIN, VENUE_ADMIN, END_USER)
+- Password hashing with bcrypt
+
+**Web App Features:**
+- Homepage with hero section
+- User signup/login with validation
+- User dashboard with stats  
+- Email verification page
+- Protected routes
+
+**Admin App Features:**
+- Admin login with role checking
+- System dashboard with statistics
+- User management interface
+- Unauthorized access handling
+
+**Shared Packages:**
+- Complete UI component library with Tailwind
+- Type-safe database services
+- Email templates and sending
+- Environment configuration
+- Validation schemas with Zod
+
+**Scripts & Configuration:**
+- Turborepo pipeline configuration
+- TypeScript path mapping
+- Tailwind CSS setup for both apps
+- Database migration scripts
+- Development startup scripts
+
+Create ALL files with complete, working implementations. No placeholders or TODOs. The project should build and run immediately after:
+
+```bash
+cd C:\SBR
+pnpm install
+pnpm build
+pnpm db:generate
+pnpm db:push  
+pnpm dev
+```
+
+Focus on creating a production-ready monorepo with proper error handling, TypeScript types, and responsive design. Both apps should be fully functional with authentication, database integration, and a complete UI.
+
+Implement exactly as specified - this is a complete, working codebase that needs to be recreated in the file system.

@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@sbr/database": ["../../packages/database/src"],
+      "@sbr/auth": ["../../packages/auth/src"],
+      "@sbr/shared": ["../../packages/shared/src"],
+      "@sbr/config": ["../../packages/config/src"],
+      "@sbr/email": ["../../packages/email/src"],
+      "@sbr/ui": ["../../packages/ui/src"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}

@@ -63,59 +63,89 @@ export default function UsersPage() {
     }
   }
 
-  const handlePasswordReset = async (userId: string) => {
+  const handleUserAction = async (userId: string, action: string, data?: any) => {
     try {
-      const response = await fetch(`/api/admin/users/${userId}/reset-password`, {
-        method: 'POST'
+      const response = await fetch(`/api/admin/users/${userId}/actions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action, data })
       })
+      
+      const result = await response.json()
+      
       if (response.ok) {
-        alert('Password reset email sent successfully')
+        // Refresh the data
+        fetchUsers()
+        fetchUserStats()
+        
+        // Show success message
+        alert(result.message || `${action} completed successfully`)
+        
+        // Close modals if needed
+        if (action === 'delete') {
+          setShowUserDetails(false)
+          setShowEditModal(false)
+          setSelectedUser(null)
+        }
       } else {
-        alert('Failed to send password reset email')
+        alert(result.error || `Failed to ${action} user`)
       }
     } catch (error) {
-      console.error('Error sending password reset:', error)
-      alert('Error sending password reset email')
+      console.error(`Error performing ${action}:`, error)
+      alert(`Error performing ${action}`)
     }
   }
 
-  const handleToggleUserStatus = async (userId: string, isActive: boolean) => {
-    try {
-      const response = await fetch(`/api/admin/users/${userId}/toggle-status`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ isActive: !isActive })
-      })
-      if (response.ok) {
-        fetchUsers() // Refresh the list
-      } else {
-        alert('Failed to update user status')
-      }
-    } catch (error) {
-      console.error('Error updating user status:', error)
-      alert('Error updating user status')
+  const handlePasswordReset = async (userId: string) => {
+    const newPassword = prompt('Enter new password (minimum 6 characters):')
+    if (!newPassword) return
+    
+    if (newPassword.length < 6) {
+      alert('Password must be at least 6 characters')
+      return
     }
+    
+    await handleUserAction(userId, 'reset_password', { newPassword })
+  }
+
+  const handleToggleUserStatus = async (userId: string, isActive: boolean) => {
+    const action = isActive ? 'lock' : 'unlock'
+    await handleUserAction(userId, action)
   }
 
   const handleDeleteUser = async (userId: string) => {
     if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
       return
     }
+    
+    await handleUserAction(userId, 'delete')
+  }
 
+  const handleViewUser = async (userId: string) => {
     try {
-      const response = await fetch(`/api/admin/users/${userId}`, {
-        method: 'DELETE'
+      const response = await fetch(`/api/admin/users/${userId}/actions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'view' })
       })
+      
+      const result = await response.json()
+      
       if (response.ok) {
-        fetchUsers() // Refresh the list
-        alert('User deleted successfully')
+        setSelectedUser(result.data)
+        setShowUserDetails(true)
       } else {
-        alert('Failed to delete user')
+        alert(result.error || 'Failed to fetch user details')
       }
     } catch (error) {
-      console.error('Error deleting user:', error)
-      alert('Error deleting user')
+      console.error('Error fetching user details:', error)
+      alert('Error fetching user details')
     }
+  }
+
+  const handleEditUser = async (userId: string, userData: any) => {
+    await handleUserAction(userId, 'edit', userData)
+    setShowEditModal(false)
   }
 
   const filteredUsers = users.filter(user =>
@@ -357,10 +387,7 @@ export default function UsersPage() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => {
-                            setSelectedUser(user)
-                            setShowUserDetails(true)
-                          }}
+                          onClick={() => handleViewUser(user.id)}
                           className="text-blue-600 hover:text-blue-900"
                         >
                           View

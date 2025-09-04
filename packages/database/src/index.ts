@@ -3,6 +3,8 @@ import { prisma } from './client'
 
 export * from '@prisma/client'
 export { prisma } from './client'
+export { dataService, DataService } from './dataService'
+export type { DashboardStats, UserStats, GameStats, SessionStats, OrganizationStats } from './dataService'
 
 export const userService = {
   async createUser(data: {

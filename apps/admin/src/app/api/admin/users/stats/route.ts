@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth, authorize } from '@sbr/auth'
-import { userService } from '@sbr/database'
+import { dataService } from '@sbr/database'
 
 export async function GET(request: NextRequest) {
   try {
@@ -22,23 +22,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const users = await userService.getAllUsers()
-
-    const stats = {
-      totalUsers: users.length,
-      activeUsers: users.length, // All users are active by default
-      verifiedUsers: users.filter(u => u.emailVerified).length,
-      superAdmins: users.filter(u => u.role === 'super_admin').length,
-      venueAdmins: users.filter(u => u.role === 'venue_admin').length,
-      endUsers: users.filter(u => u.role === 'end_user').length,
-      recentRegistrations: users
-        .filter(u => {
-          const thirtyDaysAgo = new Date()
-          thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-          return u.createdAt > thirtyDaysAgo
-        })
-        .length,
-    }
+    const stats = await dataService.getUserStats()
 
     return NextResponse.json({
       success: true,

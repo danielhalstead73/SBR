@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth, authorize } from '@sbr/auth'
-import { organizationService } from '@sbr/database'
+import { organizationService, dataService } from '@sbr/database'
 
 export async function GET(request: NextRequest) {
   try {
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const organizations = await organizationService.getAllOrganizations()
+    const organizations = await dataService.getAllOrganizations()
 
     const formattedOrganizations = organizations.map(org => ({
       id: org.id,

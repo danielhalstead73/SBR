@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { userService } from '@sbr/database'
-import bcrypt from 'bcryptjs'
 
 export async function POST(request: NextRequest) {
   try {
@@ -21,11 +20,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Create admin user
-    const hashedPassword = await bcrypt.hash('Whagmi120373!', 12)
-    
     const adminUser = await userService.createUser({
       email: 'admin@shakebattleroll.com',
-      password: hashedPassword,
+      password: 'Whagmi120373!',
       firstName: 'Admin',
       lastName: 'User',
       role: 'super_admin'

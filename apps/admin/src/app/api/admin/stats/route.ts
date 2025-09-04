@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth, authorize } from '@sbr/auth'
-import { userService, organizationService, gameService } from '@sbr/database'
+import { dataService } from '@sbr/database'
 
 export async function GET(request: NextRequest) {
   try {
@@ -22,47 +22,17 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Fetch system statistics
-    const [users, organizations, games] = await Promise.all([
-      userService.getAllUsers(),
-      organizationService.getAllOrganizations(),
-      gameService.getAllGames(),
-    ])
-
-    // Get recent users (last 5)
-    const recentUsers = users
-      .slice(0, 5)
-      .map(user => ({
-        id: user.id,
-        name: `${user.firstName} ${user.lastName}`,
-        email: user.email,
-        createdAt: user.createdAt.toLocaleDateString(),
-      }))
-
-    // Mock recent activity (you can implement this based on your needs)
-    const recentActivity = [
-      {
-        id: '1',
-        type: 'User Registration',
-        description: 'New user registered',
-        date: new Date().toLocaleDateString(),
-      },
-      {
-        id: '2',
-        type: 'Organization Created',
-        description: 'New organization added',
-        date: new Date().toLocaleDateString(),
-      },
-    ]
+    // Fetch system statistics using consistent data service
+    const stats = await dataService.getDashboardStats()
 
     return NextResponse.json({
       success: true,
-      totalUsers: users.length,
-      totalOrganizations: organizations.length,
-      totalGames: games.length,
-      totalSessions: 0, // You can implement this when you have game sessions
-      recentUsers,
-      recentActivity,
+      totalUsers: stats.totalUsers,
+      totalOrganizations: stats.totalOrganizations,
+      totalGames: stats.totalGames,
+      totalSessions: stats.totalSessions,
+      recentUsers: stats.recentUsers,
+      recentActivity: stats.recentActivity,
     })
   } catch (error) {
     console.error('Error fetching admin stats:', error)

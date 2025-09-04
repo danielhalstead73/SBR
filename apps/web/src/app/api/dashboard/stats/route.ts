@@ -1,44 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@sbr/auth'
+import { dataService } from '@sbr/database'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    const sessionToken = request.cookies.get('sbr-session')?.value
+    // Get dashboard stats using consistent data service
+    const stats = await dataService.getDashboardStats()
     
-    if (!sessionToken) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
-    }
-
-    const user = await auth.getUserByToken(sessionToken)
-    
-    if (!user) {
-      return NextResponse.json({ error: 'Invalid session' }, { status: 401 })
-    }
-
-    // Return mock stats for now - these can be made dynamic later
-    const stats = {
-      totalGames: 12,
-      totalSessions: 34,
-      totalPlayers: 8,
-      recentActivity: [
-        {
-          id: '1',
-          type: 'Game Session',
-          description: 'Played Catan with 4 players',
-          date: '2 days ago'
-        },
-        {
-          id: '2',
-          type: 'New Game',
-          description: 'Added Wingspan to collection',
-          date: '1 week ago'
-        }
-      ]
-    }
-
-    return NextResponse.json(stats)
+    return NextResponse.json({
+      totalGames: stats.totalGames,
+      totalSessions: stats.totalSessions,
+      totalPlayers: stats.totalUsers, // Use totalUsers as totalPlayers
+      recentActivity: stats.recentActivity
+    })
   } catch (error) {
-    console.error('Dashboard stats error:', error)
+    console.error('Error fetching dashboard stats:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

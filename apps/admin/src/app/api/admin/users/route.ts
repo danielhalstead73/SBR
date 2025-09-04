@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { auth, authorize } from '@sbr/auth'
-import { userService } from '@sbr/database'
+import { userService, dataService } from '@sbr/database'
 
 export async function GET(request: NextRequest) {
   try {
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const users = await userService.getAllUsers()
+    const users = await dataService.getAllUsers()
 
     const formattedUsers = users.map(user => ({
       id: user.id,

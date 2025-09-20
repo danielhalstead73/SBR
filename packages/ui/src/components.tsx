@@ -1,4 +1,5 @@
 import React from 'react'
+import { UserStatusBadge } from './components/user-status-badge'
 
 // Button Component
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -316,3 +317,6 @@ export const Spinner: React.FC<SpinnerProps> = ({ size = 'md', className = '' })
     </svg>
   )
 }
+
+// Export UserStatusBadge
+export { UserStatusBadge }

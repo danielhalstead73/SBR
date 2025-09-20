@@ -25,6 +25,10 @@ model User {
   bio             String?
   location        String?
   isActive        Boolean   @default(true)
+  status          String     @default("ACTIVE")
+  deactivatedAt   DateTime?
+  deactivatedBy   String?
+  reactivatedAt   DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
 
@@ -34,8 +38,22 @@ model User {
   createdGames    Game[]       @relation("GameCreator")
   eventAttendees  EventAttendee[]
   followers       Follower[]
+  statusLogs      UserStatusLog[]
 
   @@map("users")
+}
+
+model UserStatusLog {
+  id        String     @id @default(cuid())
+  userId    String
+  user      User       @relation(fields: [userId], references: [id])
+  oldStatus String
+  newStatus String
+  changedBy String
+  changedAt DateTime   @default(now())
+  reason    String?
+
+  @@map("user_status_logs")
 }
 
 model Session {

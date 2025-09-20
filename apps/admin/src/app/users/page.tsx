@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import AdminSidebar from '../../components/AdminSidebar'
+import { UsersTable } from './components/users-table'
+import type { UserStatus } from '@sbr/ui'
 
 interface User {
   id: string
@@ -10,9 +12,12 @@ interface User {
   email: string
   role: string
   isActive: boolean
+  status: UserStatus
   emailVerified: boolean
   createdAt: string
-  lastLoginAt?: string
+  deactivatedAt?: string | null
+  reactivatedAt?: string | null
+  lastLoginAt?: string | null
 }
 
 interface UserStats {
@@ -80,18 +85,30 @@ export default function UsersPage() {
   const handleUserAction = async (userId: string, action: string) => {
     setActionLoading(userId)
     try {
-      const response = await fetch(`/api/admin/users/${userId}/toggle-status`, {
-        method: 'POST',
+      const newStatus = action === 'activate' ? 'ACTIVE' : 'INACTIVE'
+      const response = await fetch(`/api/users/${userId}/status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          status: newStatus,
+          reason: `User ${action}d by admin`
+        }),
       })
       
       if (response.ok) {
-        setMessage({ type: 'success', text: `User ${action} successful` })
+        const data = await response.json()
+        setMessage({ type: 'success', text: data.message || `User ${action} successful` })
         fetchUsers()
+        fetchUserStats()
       } else {
-        setMessage({ type: 'error', text: `Failed to ${action} user` })
+        const data = await response.json()
+        setMessage({ type: 'error', text: data.error || `Failed to ${action} user` })
       }
     } catch (error) {
-      setMessage({ type: 'error', text: `Error ${action}ing user` })
+      console.error(`Error ${action} user:`, error)
+      setMessage({ type: 'error', text: `Failed to ${action} user` })
     } finally {
       setActionLoading(null)
     }
@@ -216,114 +233,19 @@ export default function UsersPage() {
         </div>
 
         {/* Users Table */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    User
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Role
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Joined
-                  </th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {filteredUsers.map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 h-10 w-10">
-                          <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                            <span className="text-sm font-medium text-gray-700">
-                              {user.firstName[0]}{user.lastName[0]}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
-                            {user.firstName} {user.lastName}
-                          </div>
-                          <div className="text-sm text-gray-500">{user.email}</div>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        user.role === 'super_admin' ? 'bg-red-100 text-red-800' :
-                        user.role === 'venue_admin' ? 'bg-blue-100 text-blue-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
-                        {user.role.replace('_', ' ')}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        user.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                      }`}>
-                        {user.isActive ? 'Active' : 'Inactive'}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(user.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex justify-end gap-2">
-                        <button 
-                          onClick={() => {
-                            setSelectedUser(user)
-                            setShowUserDetails(true)
-                          }}
-                          className="text-blue-600 hover:text-blue-900 transition-colors"
-                        >
-                          View
-                        </button>
-                        <button 
-                          onClick={() => {
-                            setSelectedUser(user)
-                            setShowEditModal(true)
-                          }}
-                          className="text-indigo-600 hover:text-indigo-900 transition-colors"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => handleUserAction(user.id, user.isActive ? 'deactivate' : 'activate')}
-                          disabled={actionLoading === user.id}
-                          className={`${
-                            user.isActive ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900'
-                          }`}
-                        >
-                          {actionLoading === user.id ? '...' : (user.isActive ? 'Deactivate' : 'Activate')}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          
-          {filteredUsers.length === 0 && (
-            <div className="text-center py-12">
-              <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-              </svg>
-              <h3 className="mt-2 text-sm font-medium text-gray-900">No users found</h3>
-              <p className="mt-1 text-sm text-gray-500">Get started by creating a new user.</p>
-            </div>
-          )}
-        </div>
+        <UsersTable
+          users={filteredUsers}
+          onUserAction={handleUserAction}
+          actionLoading={actionLoading}
+          onViewUser={(user) => {
+            setSelectedUser(user)
+            setShowUserDetails(true)
+          }}
+          onEditUser={(user) => {
+            setSelectedUser(user)
+            setShowEditModal(true)
+          }}
+        />
 
         {/* View User Modal */}
         {showUserDetails && selectedUser && (
@@ -345,8 +267,20 @@ export default function UsersPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Status</label>
-                  <p className="text-sm text-gray-900">{selectedUser.isActive ? 'Active' : 'Inactive'}</p>
+                  <p className="text-sm text-gray-900">{selectedUser.status}</p>
                 </div>
+                {selectedUser.deactivatedAt && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Deactivated</label>
+                    <p className="text-sm text-gray-900">{new Date(selectedUser.deactivatedAt).toLocaleString()}</p>
+                  </div>
+                )}
+                {selectedUser.reactivatedAt && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Reactivated</label>
+                    <p className="text-sm text-gray-900">{new Date(selectedUser.reactivatedAt).toLocaleString()}</p>
+                  </div>
+                )}
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Email Verified</label>
                   <p className="text-sm text-gray-900">{selectedUser.emailVerified ? 'Yes' : 'No'}</p>

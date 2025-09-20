@@ -106,6 +106,10 @@ export const userService = {
     location?: string
     role?: string
     isActive?: boolean
+    status?: string
+    deactivatedAt?: Date | null
+    deactivatedBy?: string | null
+    reactivatedAt?: Date | null
   }) {
     return prisma.user.update({
       where: { id },
@@ -122,6 +126,10 @@ export const userService = {
         bio: true,
         location: true,
         isActive: true,
+        status: true,
+        deactivatedAt: true,
+        deactivatedBy: true,
+        reactivatedAt: true,
         createdAt: true,
         updatedAt: true,
       },
@@ -166,6 +174,25 @@ export const userService = {
       },
     })
   },
+
+  async createStatusLog(data: {
+    userId: string
+    oldStatus: string
+    newStatus: string
+    changedBy: string
+    reason?: string
+  }) {
+    return prisma.userStatusLog.create({
+      data,
+    })
+  },
+
+  async getUserStatusLogs(userId: string) {
+    return prisma.userStatusLog.findMany({
+      where: { userId },
+      orderBy: { changedAt: 'desc' },
+    })
+  },
 }
 
 export const sessionService = {
@@ -197,6 +224,12 @@ export const sessionService = {
   async deleteSession(token: string) {
     return prisma.session.delete({
       where: { token },
+    })
+  },
+
+  async deleteAllUserSessions(userId: string) {
+    return prisma.session.deleteMany({
+      where: { userId },
     })
   },
 }

@@ -32,6 +32,9 @@ export async function GET(request: NextRequest) {
       role: user.role,
       isEmailVerified: user.emailVerified,
       isActive: user.isActive,
+      status: user.status,
+      deactivatedAt: user.deactivatedAt?.toISOString() || null,
+      reactivatedAt: user.reactivatedAt?.toISOString() || null,
       createdAt: user.createdAt.toISOString(),
       lastLoginAt: null, // We don't have lastLoginAt field
     }))

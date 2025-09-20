@@ -257,6 +257,12 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   handler satisfies RouteHandlerConfig<"/api/dev/db-check">
 }
 
+// Validate ../../src/app/api/users/[userId]/status/route.ts
+{
+  const handler = {} as typeof import("../../src/app/api/users/[userId]/status/route.js")
+  handler satisfies RouteHandlerConfig<"/api/users/[userId]/status">
+}
+
 
 
 

@@ -80,7 +80,7 @@ export default function UsersPage() {
   const handleUserAction = async (userId: string, action: string) => {
     setActionLoading(userId)
     try {
-      const response = await fetch(`/api/admin/users/${userId}/${action}`, {
+      const response = await fetch(`/api/admin/users/${userId}/toggle-status`, {
         method: 'POST',
       })
       
@@ -324,6 +324,165 @@ export default function UsersPage() {
             </div>
           )}
         </div>
+
+        {/* View User Modal */}
+        {showUserDetails && selectedUser && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">User Details</h3>
+              <div className="space-y-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Name</label>
+                  <p className="text-sm text-gray-900">{selectedUser.firstName} {selectedUser.lastName}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Email</label>
+                  <p className="text-sm text-gray-900">{selectedUser.email}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Role</label>
+                  <p className="text-sm text-gray-900">{selectedUser.role.replace('_', ' ')}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Status</label>
+                  <p className="text-sm text-gray-900">{selectedUser.isActive ? 'Active' : 'Inactive'}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Email Verified</label>
+                  <p className="text-sm text-gray-900">{selectedUser.emailVerified ? 'Yes' : 'No'}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Joined</label>
+                  <p className="text-sm text-gray-900">{new Date(selectedUser.createdAt).toLocaleDateString()}</p>
+                </div>
+              </div>
+              <div className="mt-6 flex justify-end">
+                <button
+                  onClick={() => setShowUserDetails(false)}
+                  className="btn-secondary"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Edit User Modal */}
+        {showEditModal && selectedUser && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Edit User</h3>
+              <form className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">First Name</label>
+                  <input
+                    type="text"
+                    defaultValue={selectedUser.firstName}
+                    className="input-field mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Last Name</label>
+                  <input
+                    type="text"
+                    defaultValue={selectedUser.lastName}
+                    className="input-field mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Email</label>
+                  <input
+                    type="email"
+                    defaultValue={selectedUser.email}
+                    className="input-field mt-1"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Role</label>
+                  <select defaultValue={selectedUser.role} className="input-field mt-1">
+                    <option value="end_user">End User</option>
+                    <option value="venue_admin">Venue Admin</option>
+                    <option value="super_admin">Super Admin</option>
+                  </select>
+                </div>
+              </form>
+              <div className="mt-6 flex justify-end space-x-3">
+                <button
+                  onClick={() => setShowEditModal(false)}
+                  className="btn-secondary"
+                >
+                  Cancel
+                </button>
+                <button className="btn-primary">
+                  Save Changes
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Add User Modal */}
+        {showCreateModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Add New User</h3>
+              <form className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">First Name</label>
+                  <input
+                    type="text"
+                    className="input-field mt-1"
+                    placeholder="Enter first name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Last Name</label>
+                  <input
+                    type="text"
+                    className="input-field mt-1"
+                    placeholder="Enter last name"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Email</label>
+                  <input
+                    type="email"
+                    className="input-field mt-1"
+                    placeholder="Enter email address"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Password</label>
+                  <input
+                    type="password"
+                    className="input-field mt-1"
+                    placeholder="Enter password"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Role</label>
+                  <select className="input-field mt-1">
+                    <option value="end_user">End User</option>
+                    <option value="venue_admin">Venue Admin</option>
+                    <option value="super_admin">Super Admin</option>
+                  </select>
+                </div>
+              </form>
+              <div className="mt-6 flex justify-end space-x-3">
+                <button
+                  onClick={() => setShowCreateModal(false)}
+                  className="btn-secondary"
+                >
+                  Cancel
+                </button>
+                <button className="btn-primary">
+                  Create User
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   )

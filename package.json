@@ -5,14 +5,18 @@
   "description": "Next.js monorepo with web and admin applications",
   "scripts": {
     "build": "turbo run build",
-    "dev": "pnpm dev:prepare && turbo run dev --parallel",
+    "dev": "turbo run dev --parallel",
     "dev:prepare": "pnpm db:generate && pnpm db:push",
+    "dev:web": "turbo run dev --filter=@sbr/web",
+    "dev:admin": "turbo run dev --filter=@sbr/admin",
     "lint": "turbo run lint",
     "clean": "turbo run clean",
-    "db:generate": "npx prisma generate --schema packages/database/prisma/schema.prisma",
-    "db:push": "npx prisma db push --schema packages/database/prisma/schema.prisma",
-    "db:migrate": "npx prisma migrate dev --schema packages/database/prisma/schema.prisma",
-    "db:studio": "npx prisma studio --schema packages/database/prisma/schema.prisma",
+    "clean:all": "rimraf node_modules packages/*/node_modules apps/*/node_modules apps/*/.next packages/database/.prisma",
+    "db:generate": "cd packages/database && pnpm prisma generate",
+    "db:push": "cd packages/database && pnpm prisma db push",
+    "db:migrate": "cd packages/database && pnpm prisma migrate dev",
+    "db:studio": "cd packages/database && pnpm prisma studio",
+    "postinstall": "pnpm db:generate",
     "prisma:clean": "rimraf \"node_modules/.pnpm/@prisma+client@*/node_modules/.prisma/client\""
   },
   "devDependencies": {

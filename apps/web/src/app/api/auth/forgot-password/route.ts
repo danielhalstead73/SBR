@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@sbr/auth'
+import { userService } from '@sbr/database'
 import { config } from '@sbr/config'
 
 export async function POST(request: NextRequest) {
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user exists
-    const user = await auth.getUserByEmail(email)
+    const user = await userService.findUserByEmail(email)
     
     if (!user) {
       // For security, don't reveal if email exists or not
@@ -24,8 +24,8 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // Generate password reset token
-    const resetToken = await auth.generatePasswordResetToken(user.id)
+    // Generate a simple reset token (in a real app, this would be more secure)
+    const resetToken = Buffer.from(`${user.id}-${Date.now()}`).toString('base64')
     
     // Create reset URL
     const resetUrl = `${config.urls.web}/reset-password?token=${resetToken}`

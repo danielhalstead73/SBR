@@ -77,17 +77,17 @@ async function fetchBGGGameDetails(bggId: number) {
       description: description.replace(/<[^>]*>/g, ''), // Strip HTML tags
       image,
       thumbnail,
-      minPlayers: minPlayers || null,
-      maxPlayers: maxPlayers || null,
-      playingTime: playingTime || null,
-      minAge: minAge || null,
+      minPlayers: minPlayers || undefined,
+      maxPlayers: maxPlayers || undefined,
+      playingTime: playingTime || undefined,
+      minAge: minAge || undefined,
       categories: JSON.stringify(categories),
       mechanics: JSON.stringify(mechanics),
       designers: JSON.stringify(designers),
       publishers: JSON.stringify(publishers),
-      yearPublished: yearPublished || null,
-      complexity: complexity || null,
-      rating: averageRating || null,
+      yearPublished: yearPublished || undefined,
+      complexity: complexity || undefined,
+      rating: averageRating || undefined,
     }
   } catch (error) {
     console.error('Error fetching BGG game details:', error)

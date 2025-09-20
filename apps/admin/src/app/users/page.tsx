@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import AdminSidebar from '../../components/AdminSidebar'
 
 interface User {
   id: string
@@ -104,7 +105,8 @@ export default function UsersPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <AdminSidebar />
+      <div className="admin-content">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">User Management</h1>

@@ -105,6 +105,7 @@ export const userService = {
     bio?: string
     location?: string
     role?: string
+    isActive?: boolean
   }) {
     return prisma.user.update({
       where: { id },
@@ -120,6 +121,7 @@ export const userService = {
         avatar: true,
         bio: true,
         location: true,
+        isActive: true,
         createdAt: true,
         updatedAt: true,
       },

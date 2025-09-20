@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
       lastName: user.lastName,
       role: user.role,
       isEmailVerified: user.emailVerified,
-      isActive: true, // Default to true since we don't have isActive field
+      isActive: user.isActive,
       createdAt: user.createdAt.toISOString(),
       lastLoginAt: null, // We don't have lastLoginAt field
     }))
@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
         lastName: newUser.lastName,
         role: newUser.role,
         isEmailVerified: newUser.emailVerified,
-        isActive: true, // Default to true since we don't have isActive field
+        isActive: newUser.isActive,
         createdAt: newUser.createdAt.toISOString(),
       },
     })

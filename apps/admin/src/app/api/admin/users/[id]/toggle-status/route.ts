@@ -36,10 +36,9 @@ export async function POST(
       )
     }
 
-    // Since we don't have an isActive field in the User model, we'll implement this as a role-based toggle
-    // For now, we'll toggle between 'end_user' and 'venue_admin' roles
-    const newRole = userData.role === 'end_user' ? 'venue_admin' : 'end_user'
-    const updatedUser = await userService.updateUser(userId, { role: newRole })
+    // Toggle the isActive status
+    const newActiveStatus = !userData.isActive
+    const updatedUser = await userService.updateUser(userId, { isActive: newActiveStatus })
     
     if (!updatedUser) {
       return NextResponse.json(
@@ -50,8 +49,8 @@ export async function POST(
     
     return NextResponse.json({ 
       success: true, 
-      message: 'User status updated successfully',
-      isActive: newRole !== 'end_user'
+      message: `User ${newActiveStatus ? 'activated' : 'deactivated'} successfully`,
+      isActive: newActiveStatus
     })
   } catch (error) {
     console.error('Error toggling user status:', error)

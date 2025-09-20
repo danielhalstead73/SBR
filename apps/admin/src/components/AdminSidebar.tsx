@@ -51,9 +51,10 @@ export default function AdminSidebar() {
   }
 
   return (
-    <div className="admin-sidebar">
+    <div className="admin-sidebar" style={{ zIndex: 1000 }}>
       <div className="p-6">
         <h1 className="text-xl font-bold text-white">SBR Admin</h1>
+        <div className="text-xs text-gray-400 mt-1">Sidebar Loaded</div>
       </div>
       
       <nav className="mt-6">

@@ -201,7 +201,10 @@ export default function UsersPage() {
               </div>
             </div>
             
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+            <button 
+              onClick={() => setShowCreateModal(true)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
               Add User
             </button>
           </div>
@@ -271,10 +274,22 @@ export default function UsersPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex justify-end gap-2">
-                        <button className="text-blue-600 hover:text-blue-900">
+                        <button 
+                          onClick={() => {
+                            setSelectedUser(user)
+                            setShowUserDetails(true)
+                          }}
+                          className="text-blue-600 hover:text-blue-900 transition-colors"
+                        >
                           View
                         </button>
-                        <button className="text-indigo-600 hover:text-indigo-900">
+                        <button 
+                          onClick={() => {
+                            setSelectedUser(user)
+                            setShowEditModal(true)
+                          }}
+                          className="text-indigo-600 hover:text-indigo-900 transition-colors"
+                        >
                           Edit
                         </button>
                         <button

@@ -11,7 +11,7 @@
     "dev:admin": "turbo run dev --filter=@sbr/admin",
     "lint": "turbo run lint",
     "clean": "turbo run clean",
-    "clean:all": "rimraf node_modules packages/*/node_modules apps/*/node_modules apps/*/.next packages/database/.prisma",
+    "clean:all": "rimraf node_modules && rimraf packages/database/node_modules && rimraf packages/auth/node_modules && rimraf packages/shared/node_modules && rimraf packages/config/node_modules && rimraf packages/email/node_modules && rimraf packages/ui/node_modules && rimraf apps/admin/node_modules && rimraf apps/web/node_modules && rimraf apps/admin/.next && rimraf apps/web/.next && rimraf packages/database/.prisma",
     "db:generate": "cd packages/database && pnpm prisma generate",
     "db:push": "cd packages/database && pnpm prisma db push",
     "db:migrate": "cd packages/database && pnpm prisma migrate dev",
